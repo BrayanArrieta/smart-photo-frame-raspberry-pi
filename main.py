@@ -16,12 +16,31 @@ class App(QWidget):
         self.initUI()
 
     def initUI(self):
-        #button = QPushButton('PyQt5 button', self)
-        #button.setToolTip('This is an example button')
-        #button.move(100, 70)
+        button = QPushButton('PyQt5 button', self)
+        button.setToolTip('This is an example button')
+        button.resize(self.width/4,self.height / 8)
+        button.move(0, self.height-button.height())
+
+        button1 = QPushButton('PyQt5 button', self)
+        button1.setToolTip('This is an example button')
+        button1.resize(self.width / 4,self.height / 8)
+        button1.move(((self.width/4)*2)-button.width(), self.height-button.height())
+
+        button2 = QPushButton('PyQt5 button', self)
+        button2.setToolTip('This is an example button')
+        button2.resize(self.width / 4, self.height / 8)
+        button2.move(((self.width/4)*3)-button.width(), self.height-button.height())
+
+        button3 = QPushButton('PyQt5 button', self)
+        button3.setToolTip('This is an example button')
+        button3.resize(self.width / 4, self.height / 8)
+        button3.move(((self.width/4)*4)-button.width(),self.height-button.height())
+
         self.setWindowTitle(self.title)
         self.setGeometry(self.left, self.top, self.width, self.height)
         label = QLabel(self)
+
+
         pixmap = QPixmap('tec3.png')
         label.setPixmap(pixmap)
         label.move(self.width/2-pixmap.width()/2,self.height/2-pixmap.height()/2)

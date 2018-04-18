@@ -7,7 +7,7 @@ from PyQt5.QtGui import QIcon,QPixmap
 from google.cloud import storage
 from oauth2client.client import GoogleCredentials
 GOOGLE_APPLICATION_CREDENTIALS = 'credentials.json'
-credentials = GoogleCredentials.get_application_default()
+# credentials = GoogleCredentials.get_application_default()
 os.environ["GOOGLE_APPLICATION_CREDENTIALS"]=GOOGLE_APPLICATION_CREDENTIALS
 client = storage.Client(GOOGLE_APPLICATION_CREDENTIALS)
 bucket = client.get_bucket('smart-photo-frame-raspberry-pi.appspot.com')

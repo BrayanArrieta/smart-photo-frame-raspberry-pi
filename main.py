@@ -1,9 +1,10 @@
 import sys, traceback
 import ctypes
 from PyQt5 import QtGui, QtCore
+from PyQt5.QtCore import QSize
 from PyQt5.QtWidgets import QApplication, QWidget,QPushButton,QLabel
 from PyQt5.QtGui import QIcon,QPixmap
-from google.cloud import storage
+# from google.cloud import storage
 
 class App(QWidget):
     def __init__(self):
@@ -56,9 +57,10 @@ class App(QWidget):
 
 
         pixmap = QPixmap('images/img1.jpg')
-        self.label.setPixmap(pixmap)
-        # self.label.resize(self.width,self.height-(self.height/8))
-        self.label.move(self.width/2-pixmap.width()/2,self.height/2-pixmap.height()/2)
+        self.label.resize(self.width-(self.width/12),self.height-(self.height/4))
+        newPixmap = pixmap.scaled(QSize(self.label.width(), self.label.height()));
+        self.label.setPixmap(newPixmap)
+        self.label.move(self.width/2-self.label.width()/2,self.height/14)
         self.show()
 
     def closeEvent(self, event):
@@ -86,22 +88,28 @@ class App(QWidget):
     def downloadEvent(self):
         print ('clicked down')
     def previousEvent(self):
+        pixmap = QPixmap('images/img1.jpg')
+        newPixmap = pixmap.scaled(QSize(self.label.width(), self.label.height()));
+        self.label.setPixmap(newPixmap)
         print ('clicked <-')
     def nextEvent(self):
+        pixmap = QPixmap('images/img2.jpg')
+        newPixmap = pixmap.scaled(QSize(self.label.width(), self.label.height()));
+        self.label.setPixmap(newPixmap)
         print ('clicked ->')
 
 
 
-# if __name__ == '__main__':
-#     app = QApplication(sys.argv)
-#     ex = App()
-#     sys.exit(app.exec_())
+if __name__ == '__main__':
+    app = QApplication(sys.argv)
+    ex = App()
+    sys.exit(app.exec_())
 
-client = storage.Client()
-# https://console.cloud.google.com/storage/browser/[bucket-id]/  smart-photo-frame-raspberry-pi.appspot.com
-try:
-    bucket = client.get_bucket('https://firebasestorage.googleapis.com/v0/b/smart-photo-frame-raspberry-pi.appspot.com/')
-except Exception :
-    print ("Exception in user code:")
-    print ('-' * 60)
-    traceback.print_exc(file=sys.stdout)
+# client = storage.Client()
+# # https://console.cloud.google.com/storage/browser/[bucket-id]/  smart-photo-frame-raspberry-pi.appspot.com
+# try:
+#     bucket = client.get_bucket('https://firebasestorage.googleapis.com/v0/b/smart-photo-frame-raspberry-pi.appspot.com/')
+# except Exception :
+#     print ("Exception in user code:")
+#     print ('-' * 60)
+#     traceback.print_exc(file=sys.stdout)

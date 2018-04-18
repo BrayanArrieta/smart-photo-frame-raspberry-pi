@@ -1,11 +1,16 @@
-import sys, traceback
+import sys, traceback, os
 import ctypes
 from PyQt5 import QtGui, QtCore
 from PyQt5.QtCore import QSize
 from PyQt5.QtWidgets import QApplication, QWidget,QPushButton,QLabel
 from PyQt5.QtGui import QIcon,QPixmap
-# from google.cloud import storage
-
+from google.cloud import storage
+from oauth2client.client import GoogleCredentials
+GOOGLE_APPLICATION_CREDENTIALS = 'credentials.json'
+credentials = GoogleCredentials.get_application_default()
+os.environ["GOOGLE_APPLICATION_CREDENTIALS"]=GOOGLE_APPLICATION_CREDENTIALS
+client = storage.Client(GOOGLE_APPLICATION_CREDENTIALS)
+bucket = client.get_bucket('smart-photo-frame-raspberry-pi.appspot.com')
 class App(QWidget):
     def __init__(self):
         super().__init__()
@@ -74,17 +79,12 @@ class App(QWidget):
         self.height = screensize[1]-self.top
 
     def uploadEvent(self):
-        client = storage.Client()
-        # https://console.cloud.google.com/storage/browser/[bucket-id]/  smart-photo-frame-raspberry-pi.appspot.com
-        try:
-            bucket = client.get_bucket('smart-photo-frame-raspberry-pi.appspot.com')
-        except Exception :
-            print ("Exception in user code:")
-            print ('-' * 60)
-            traceback.print_exc(file=sys.stdout)
-        # # Then do other things...
-        # blob = bucket.get_blob('remote/path/to/texto.txt')
-        # print(blob.download_as_string())
+        blob = bucket.get_blob('image.png')
+        with open('images/image.png', 'wb') as file_obj:
+            blob.download_to_file(file_obj)
+        self.label.setPixmap(QPixmap('images/image.png'))
+        # print(blob._get_download_url())
+        # print(blob.download_as_string().decode())
     def downloadEvent(self):
         print ('clicked down')
     def previousEvent(self):
@@ -105,10 +105,11 @@ if __name__ == '__main__':
     ex = App()
     sys.exit(app.exec_())
 
-# client = storage.Client()
-# # https://console.cloud.google.com/storage/browser/[bucket-id]/  smart-photo-frame-raspberry-pi.appspot.com
 # try:
-#     bucket = client.get_bucket('https://firebasestorage.googleapis.com/v0/b/smart-photo-frame-raspberry-pi.appspot.com/')
+#
+#     blob = bucket.get_blob('image.png')
+#     with open('images/image.png', 'wb') as file_obj:
+#         blob.download_to_file(file_obj)
 # except Exception :
 #     print ("Exception in user code:")
 #     print ('-' * 60)

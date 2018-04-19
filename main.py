@@ -5,6 +5,7 @@ from PyQt5.QtCore import QSize
 from PyQt5.QtWidgets import QApplication, QWidget,QPushButton,QLabel
 from PyQt5.QtGui import QIcon,QPixmap
 from google.cloud import storage
+
 from oauth2client.client import GoogleCredentials
 GOOGLE_APPLICATION_CREDENTIALS = 'credentials.json'
 # credentials = GoogleCredentials.get_application_default()
@@ -12,22 +13,20 @@ os.environ["GOOGLE_APPLICATION_CREDENTIALS"]=GOOGLE_APPLICATION_CREDENTIALS
 client = storage.Client(GOOGLE_APPLICATION_CREDENTIALS)
 bucket = client.get_bucket('smart-photo-frame-raspberry-pi.appspot.com')
 class App(QWidget):
-    def __init__(self):
+    def __init__(self,resolution):
         super().__init__()
         # constants
         self.title = 'Window'
         self.left = 0
         self.top = 26
-        self.width = 0
-        self.height = 0
+        self.width = resolution.width()
+        self.height = resolution.height()
         # methods
         self.config()
         self.initUI()
     def config(self):
-        self.setWindowSize()
         self.setWindowTitle(self.title)
         self.setGeometry(self.left, self.top, self.width, self.height)
-        self.saludo="ndnd"
     def initUI(self):
         # upload
         button_upload = QPushButton( self)
@@ -71,13 +70,6 @@ class App(QWidget):
     def closeEvent(self, event):
         self.deleteLater()
         event.accept()
-
-    def setWindowSize(self):
-        user32 = ctypes.windll.user32
-        screensize = user32.GetSystemMetrics(0), user32.GetSystemMetrics(1)
-        self.width = screensize[0]
-        self.height = screensize[1]-self.top
-
     def uploadEvent(self):
         blob = bucket.get_blob('image.png')
         with open('images/image.png', 'wb') as file_obj:
@@ -102,7 +94,7 @@ class App(QWidget):
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
-    ex = App()
+    ex = App(app.desktop().screenGeometry())
     sys.exit(app.exec_())
 
 # try:

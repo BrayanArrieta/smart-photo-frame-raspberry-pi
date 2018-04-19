@@ -2,7 +2,7 @@ import sys, traceback, os
 import ctypes
 from PyQt5 import QtGui, QtCore
 from PyQt5.QtCore import QSize
-from PyQt5.QtWidgets import QApplication, QWidget,QPushButton,QLabel
+from PyQt5.QtWidgets import QApplication, QWidget, QPushButton, QLabel, QMessageBox
 from PyQt5.QtGui import QIcon,QPixmap
 from google.cloud import storage
 import shutil
@@ -20,7 +20,7 @@ class App(QWidget):
         # constants
         self.title = 'Window'
         self.left = 0
-        self.top = 26
+        self.top = 1
         self.width = resolution.width()
         self.height = resolution.height()
         self.listNames = []
@@ -93,8 +93,9 @@ class App(QWidget):
                 blob = bucket.blob(path_file)
                 blob.upload_from_filename(filename='upload_images/' + filename)
                 cont += 1
+            QMessageBox.about(self,"Information","The images were uploaded succesfully")
         except Exception:
-            print("Error in upload images")
+            QMessageBox.critical(self, "Error", "!Oops¡ Something go wrong")
 
     def downloadEvent(self):
         shutil.rmtree('images')
@@ -108,6 +109,7 @@ class App(QWidget):
             except Exception:
                 os.remove(path)
                 break
+        QMessageBox.about(self, "Information", "The images were downloaded succesfully")
         self.readFileNames()
 
     def previousEvent(self):

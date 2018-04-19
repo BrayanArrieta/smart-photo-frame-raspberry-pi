@@ -5,7 +5,7 @@ from PyQt5.QtCore import QSize
 from PyQt5.QtWidgets import QApplication, QWidget,QPushButton,QLabel
 from PyQt5.QtGui import QIcon,QPixmap
 from google.cloud import storage
-
+import shutil
 from oauth2client.client import GoogleCredentials
 GOOGLE_APPLICATION_CREDENTIALS = 'credentials.json'
 # credentials = GoogleCredentials.get_application_default()
@@ -58,27 +58,39 @@ class App(QWidget):
         button_download.clicked.connect(self.downloadEvent)
 
         self.label = QLabel(self)
-
-
-        pixmap = QPixmap('images/img1.jpg')
-        self.label.resize(self.width-(self.width/12),self.height-(self.height/4))
-        newPixmap = pixmap.scaled(QSize(self.label.width(), self.label.height()));
-        self.label.setPixmap(newPixmap)
-        self.label.move(self.width/2-self.label.width()/2,self.height/14)
+        # pixmap = QPixmap('images/image.png')
+        # self.label.resize(self.width-(self.width/12),self.height-(self.height/4))
+        # newPixmap = pixmap.scaled(QSize(self.label.width(), self.label.height()));
+        # self.label.setPixmap(newPixmap)
+        # self.label.move(self.width/2-self.label.width()/2,self.height/14)
         self.show()
 
     def closeEvent(self, event):
         self.deleteLater()
         event.accept()
     def uploadEvent(self):
-        blob = bucket.get_blob('image.png')
-        with open('images/image.png', 'wb') as file_obj:
-            blob.download_to_file(file_obj)
-        self.label.setPixmap(QPixmap('images/image.png'))
-        # print(blob._get_download_url())
-        # print(blob.download_as_string().decode())
+        try:
+            path = 'upload_images'
+            cont = 1
+            for filename in os.listdir(path):
+                path_file = 'images/' + str(cont) + '.png'
+                blob = bucket.blob(path_file)
+                blob.upload_from_filename(filename='upload_images/' + filename)
+                cont += 1
+        except Exception:
+            print("Error in upload images")
     def downloadEvent(self):
-        print ('clicked down')
+        shutil.rmtree('images')
+        os.mkdir('images')
+        for i in range(1, 11):
+            try:
+                path = 'images/' + str(i) + '.png'
+                blob = bucket.get_blob(path)
+                with open(path, 'wb') as file_obj:
+                    blob.download_to_file(file_obj)
+            except Exception:
+                os.remove(path)
+                break
     def previousEvent(self):
         pixmap = QPixmap('images/img1.jpg')
         newPixmap = pixmap.scaled(QSize(self.label.width(), self.label.height()));
@@ -98,11 +110,10 @@ if __name__ == '__main__':
     sys.exit(app.exec_())
 
 # try:
-#
-#     blob = bucket.get_blob('image.png')
-#     with open('images/image.png', 'wb') as file_obj:
-#         blob.download_to_file(file_obj)
+#     # blob = bucket.get_blob('images/images/.png')
+#     # blob.delete()
 # except Exception :
 #     print ("Exception in user code:")
 #     print ('-' * 60)
 #     traceback.print_exc(file=sys.stdout)
+

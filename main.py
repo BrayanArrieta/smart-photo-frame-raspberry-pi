@@ -158,7 +158,7 @@ class App(QWidget):
             traceback.print_exc(file=sys.stdout)
 
 def thread(ex):
-    ser = serial.Serial('dev/rfcomm0', 9600)
+    ser = serial.Serial('/dev/rfcomm0', 9600)
     while True:
         try:
             result = ser.read().decode()

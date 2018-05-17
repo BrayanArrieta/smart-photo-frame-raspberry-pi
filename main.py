@@ -1,10 +1,12 @@
 import sys, traceback, os
 import ctypes
+import serial
 from PyQt5 import QtGui, QtCore
 from PyQt5.QtCore import QSize
 from PyQt5.QtWidgets import QApplication, QWidget, QPushButton, QLabel, QMessageBox
 from PyQt5.QtGui import QIcon,QPixmap
 from google.cloud import storage
+from _thread import *
 import shutil
 from oauth2client.client import GoogleCredentials
 GOOGLE_APPLICATION_CREDENTIALS = 'credentials.json'
@@ -155,12 +157,26 @@ class App(QWidget):
             print ('-' * 60)
             traceback.print_exc(file=sys.stdout)
 
+def thread(ex):
+    ser = serial.Serial('dev/rfcomm0', 9600)
+    while True:
+        try:
+            result = ser.read().decode()
+            if(result=="1"):
+                ex.nextEvent()
+            elif(result=="0"):
+                ex.previousEvent()
+        except:
+            # Clean up the connection
+            break
 
 
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
     ex = App(app.desktop().screenGeometry())
+    ex.nextEvent()
+    start_new_thread(thread, (ex,))
     sys.exit(app.exec_())
 
 # try:
